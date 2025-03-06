@@ -10,7 +10,23 @@ if (Environment.GetEnvironmentVariable("CODESPACES")?.Equals("true", StringCompa
 {
     builder.WebHost.ConfigureKestrel(options =>
     {
-        options.ListenAnyIP(5000); // HTTP only
+        // Try to use port from environment variable first, or try 5000
+        var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var envPort) 
+            ? envPort 
+            : 5000;
+            
+        try
+        {
+            options.ListenAnyIP(port); // HTTP only
+            Console.WriteLine($"Application listening on port {port}");
+        }
+        catch (System.IO.IOException)
+        {
+            // If port is in use, try a different port
+            var randomPort = new Random().Next(8000, 9000);
+            options.ListenAnyIP(randomPort);
+            Console.WriteLine($"Default port {port} was in use, now listening on port {randomPort}");
+        }
     });
 }
 
