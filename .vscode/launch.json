@@ -6,9 +6,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/HelloWorld/bin/Debug/net9.0/HelloWorld.dll",
+      "program": "${workspaceFolder}/WeatherApp/bin/Debug/net9.0/WeatherApp.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/HelloWorld",
+      "cwd": "${workspaceFolder}/WeatherApp",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",

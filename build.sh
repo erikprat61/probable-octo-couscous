@@ -6,20 +6,20 @@ set -e
 echo "Creating .NET 9 API project structure..."
 
 # Create solution and projects
-mkdir -p HelloWorld/Controllers
-mkdir -p HelloWorld.Tests
+mkdir -p WeatherApp/Controllers
+mkdir -p WeatherApp.Tests
 mkdir -p .vscode
 mkdir -p .devcontainer
 
 # Create solution file
-cat > HelloWorld.sln << 'EOF'
+cat > WeatherApp.sln << 'EOF'
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "HelloWorld\HelloWorld.csproj", "{16A9FC7F-0CB3-4A09-9879-DD63F1D82D2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp", "WeatherApp\WeatherApp.csproj", "{16A9FC7F-0CB3-4A09-9879-DD63F1D82D2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Tests", "HelloWorld.Tests\HelloWorld.Tests.csproj", "{63D83A2D-B2B5-48F3-8A3C-5B8869DCFF7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp.Tests", "WeatherApp.Tests\WeatherApp.Tests.csproj", "{63D83A2D-B2B5-48F3-8A3C-5B8869DCFF7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,7 +43,7 @@ EndGlobal
 EOF
 
 # Create API project files
-cat > HelloWorld/HelloWorld.csproj << 'EOF'
+cat > WeatherApp/WeatherApp.csproj << 'EOF'
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
@@ -60,7 +60,7 @@ cat > HelloWorld/HelloWorld.csproj << 'EOF'
 </Project>
 EOF
 
-cat > HelloWorld/Program.cs << 'EOF'
+cat > WeatherApp/Program.cs << 'EOF'
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -101,25 +101,33 @@ app.Run();
 public partial class Program { }
 EOF
 
-cat > HelloWorld/Controllers/HelloController.cs << 'EOF'
+cat > WeatherApp/Controllers/WeatherController.cs << 'EOF'
 using Microsoft.AspNetCore.Mvc;
 
-namespace HelloWorld.Controllers;
+namespace WeatherApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HelloController : ControllerBase
+public class WeatherController : ControllerBase
 {
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok("Hello, World!");
+        var forecast = new
+        {
+            Date = DateTime.Now,
+            TemperatureC = 20,
+            TemperatureF = 68,
+            Summary = "Sunny"
+        };
+        
+        return Ok(forecast);
     }
 }
 EOF
 
 # Create test project files
-cat > HelloWorld.Tests/HelloWorld.Tests.csproj << 'EOF'
+cat > WeatherApp.Tests/WeatherApp.Tests.csproj << 'EOF'
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -140,41 +148,52 @@ cat > HelloWorld.Tests/HelloWorld.Tests.csproj << 'EOF'
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HelloWorld\HelloWorld.csproj" />
+    <ProjectReference Include="..\WeatherApp\WeatherApp.csproj" />
   </ItemGroup>
 
 </Project>
 EOF
 
-cat > HelloWorld.Tests/HelloControllerTests.cs << 'EOF'
+cat > WeatherApp.Tests/WeatherControllerTests.cs << 'EOF'
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
-namespace HelloWorld.Tests;
+namespace WeatherApp.Tests;
 
-public class HelloControllerTests : IClassFixture<WebApplicationFactory<Program>>
+public class WeatherControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
 
-    public HelloControllerTests(WebApplicationFactory<Program> factory)
+    public WeatherControllerTests(WebApplicationFactory<Program> factory)
     {
         _factory = factory;
     }
 
     [Fact]
-    public async Task Get_ReturnsHelloWorld()
+    public async Task Get_ReturnsWeatherForecast()
     {
         // Arrange
         var client = _factory.CreateClient();
 
         // Act
-        var response = await client.GetAsync("/api/hello");
+        var response = await client.GetAsync("/api/weather");
         var content = await response.Content.ReadAsStringAsync();
-
+        
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal("\"Hello, World!\"", content);
+        
+        // Verify it contains the expected properties
+        var forecast = JsonSerializer.Deserialize<JsonElement>(content);
+        Assert.True(forecast.TryGetProperty("date", out _));
+        Assert.True(forecast.TryGetProperty("temperatureC", out var tempC));
+        Assert.True(forecast.TryGetProperty("temperatureF", out _));
+        Assert.True(forecast.TryGetProperty("summary", out var summary));
+        
+        // Check some basic values
+        Assert.Equal(20, tempC.GetInt32());
+        Assert.Equal("Sunny", summary.GetString());
     }
 }
 EOF
@@ -218,9 +237,9 @@ cat > .vscode/launch.json << 'EOF'
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/HelloWorld/bin/Debug/net9.0/HelloWorld.dll",
+      "program": "${workspaceFolder}/WeatherApp/bin/Debug/net9.0/WeatherApp.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/HelloWorld",
+      "cwd": "${workspaceFolder}/WeatherApp",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
@@ -250,7 +269,7 @@ cat > .vscode/tasks.json << 'EOF'
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/HelloWorld.sln",
+        "${workspaceFolder}/WeatherApp.sln",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -262,7 +281,7 @@ cat > .vscode/tasks.json << 'EOF'
       "type": "process",
       "args": [
         "test",
-        "${workspaceFolder}/HelloWorld.Tests/HelloWorld.Tests.csproj",
+        "${workspaceFolder}/WeatherApp.Tests/WeatherApp.Tests.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
