@@ -21,6 +21,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    // Add a redirect from the root URL to Swagger, but hide it from Swagger docs
+    app.MapGet("/", () => Results.Redirect("/swagger"))
+       .ExcludeFromDescription();
 }
 
 // Only use HTTPS redirection when not in Codespaces
