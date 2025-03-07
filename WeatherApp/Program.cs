@@ -1,32 +1,24 @@
+using WeatherApp.Repositories;
+using WeatherApp.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register services
+builder.Services.AddSingleton<ITimeService, TimeService>();
+builder.Services.AddScoped<IWeatherService, WeatherService>();
+builder.Services.AddSingleton<IWeatherRepository, WeatherRepository>();
 
 // Configure Kestrel for Codespaces environment to prevent HTTPS errors
 if (Environment.GetEnvironmentVariable("CODESPACES")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true)
 {
     builder.WebHost.ConfigureKestrel(options =>
     {
-        // Try to use port from environment variable first, or try 5000
-        var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var envPort) 
-            ? envPort 
-            : 5000;
-            
-        try
-        {
-            options.ListenAnyIP(port); // HTTP only
-            Console.WriteLine($"Application listening on port {port}");
-        }
-        catch (System.IO.IOException)
-        {
-            // If port is in use, try a different port
-            var randomPort = new Random().Next(8000, 9000);
-            options.ListenAnyIP(randomPort);
-            Console.WriteLine($"Default port {port} was in use, now listening on port {randomPort}");
-        }
+        options.ListenAnyIP(5000); // HTTP only
     });
 }
 
