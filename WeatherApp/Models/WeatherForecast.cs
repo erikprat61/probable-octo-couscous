@@ -2,9 +2,11 @@ namespace WeatherApp.Models;
 
 public class WeatherForecast
 {
-    public int Id { get; set; }
-    public DateOnly Date { get; set; }
+    public DateTime Date { get; set; }
+    
     public int TemperatureC { get; set; }
+    
+    public int TemperatureF => 32 + (int)(TemperatureC * 9 / 5);
+    
     public string? Summary { get; set; }
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }

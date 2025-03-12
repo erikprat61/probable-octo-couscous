@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using WeatherApp.Models;
-using WeatherApp.Services;
 
 namespace WeatherApp.Controllers;
 
@@ -8,57 +7,36 @@ namespace WeatherApp.Controllers;
 [Route("api/[controller]")]
 public class WeatherController : ControllerBase
 {
-    private readonly IWeatherService _weatherService;
-    private readonly ITimeService _timeService;
-
-    public WeatherController(IWeatherService weatherService, ITimeService timeService)
+    private static readonly string[] Summaries = new[]
     {
-        _weatherService = weatherService;
-        _timeService = timeService;
-    }
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] int days = 5)
+    public IActionResult Get()
     {
-        var result = await _weatherService.GetForecastsAsync(days);
-        return Ok(result);
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var forecast = await _weatherService.GetForecastByIdAsync(id);
-        
-        if (forecast == null)
+        var forecast = new WeatherForecast
         {
-            return NotFound();
-        }
+            Date = DateTime.Now,
+            TemperatureC = 20,
+            Summary = "Sunny"
+        };
         
         return Ok(forecast);
     }
-
-    [HttpGet("summary")]
-    public async Task<IActionResult> GetSummary([FromQuery] DateTime start, [FromQuery] DateTime end)
+    
+    [HttpGet("week")]
+    public IActionResult GetWeekForecast()
     {
-        var startDate = DateOnly.FromDateTime(start);
-        var endDate = DateOnly.FromDateTime(end);
-        
-        if (startDate > endDate)
+        var rng = new Random();
+        var forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
-            return BadRequest("Start date must be before end date");
-        }
+            Date = DateTime.Now.AddDays(index),
+            TemperatureC = rng.Next(-20, 55),
+            Summary = Summaries[rng.Next(Summaries.Length)]
+        })
+        .ToArray();
         
-        var summary = await _weatherService.GetWeatherSummaryAsync(startDate, endDate);
-        return Ok(summary);
-    }
-
-    [HttpGet("time")]
-    public IActionResult GetTime()
-    {
-        return Ok(new Dictionary<string, object>
-        { 
-            ["currentTime"] = _timeService.GetCurrentTime(),
-            ["timeStamp"] = _timeService.GetTimeStamp()
-        });
+        return Ok(forecasts);
     }
 }

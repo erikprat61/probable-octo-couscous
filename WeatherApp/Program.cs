@@ -1,17 +1,9 @@
-using WeatherApp.Repositories;
-using WeatherApp.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
+// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Register services
-builder.Services.AddSingleton<ITimeService, TimeService>();
-builder.Services.AddScoped<IWeatherService, WeatherService>();
-builder.Services.AddSingleton<IWeatherRepository, WeatherRepository>();
 
 // Configure Kestrel for Codespaces environment to prevent HTTPS errors
 if (Environment.GetEnvironmentVariable("CODESPACES")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true)
