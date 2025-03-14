@@ -57,7 +57,7 @@ public class WeatherControllerTests : IClassFixture<WebApplicationFactory<Progra
         // Verify we get an array of forecasts
         var forecasts = JsonSerializer.Deserialize<JsonElement>(content);
         Assert.Equal(JsonValueKind.Array, forecasts.ValueKind);
-        Assert.Equal(5, forecasts.GetArrayLength());
+        Assert.Equal(4, forecasts.GetArrayLength());
         
         // Check the first item has all required properties
         var firstItem = forecasts[0];

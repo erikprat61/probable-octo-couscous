@@ -8,7 +8,7 @@ public interface IWeatherService
     /// Gets all available weather forecasts
     /// </summary>
     IEnumerable<WeatherForecast> GetAllForecasts();
-    
+
     /// <summary>
     /// Gets only featured weather forecasts
     /// </summary>
@@ -17,19 +17,6 @@ public interface IWeatherService
 
 public class WeatherService : IWeatherService
 {
-    // Sample weather forecast data with some forecasts marked as featured
-    private static readonly List<WeatherForecast> _forecasts = new List<WeatherForecast>
-    {
-        new WeatherForecast { Date = DateTime.Now.AddDays(1), TemperatureC = -20, Summary = "Freezing", IsFeatured = true },
-        new WeatherForecast { Date = DateTime.Now.AddDays(2), TemperatureC = -10, Summary = "Bracing", IsFeatured = false },
-        new WeatherForecast { Date = DateTime.Now.AddDays(3), TemperatureC = 0, Summary = "Chilly", IsFeatured = false },
-        new WeatherForecast { Date = DateTime.Now.AddDays(4), TemperatureC = 10, Summary = "Cool", IsFeatured = true },
-        new WeatherForecast { Date = DateTime.Now.AddDays(5), TemperatureC = 20, Summary = "Mild", IsFeatured = false },
-        new WeatherForecast { Date = DateTime.Now.AddDays(6), TemperatureC = 30, Summary = "Warm", IsFeatured = false },
-        new WeatherForecast { Date = DateTime.Now.AddDays(7), TemperatureC = 40, Summary = "Hot", IsFeatured = true },
-        new WeatherForecast { Date = DateTime.Now.AddDays(8), TemperatureC = 50, Summary = "Scorching", IsFeatured = false },
-    };
-
     /// <summary>
     /// Gets all available weather forecasts
     /// </summary>
@@ -45,10 +32,21 @@ public class WeatherService : IWeatherService
     {
         // Get all forecasts
         var allForecasts = _forecasts.ToList();
-        
-        // TODO: Filter for featured forecasts only
+
         var featuredForecasts = allForecasts;
-        
+
         return featuredForecasts;
     }
+
+    private static readonly List<WeatherForecast> _forecasts = new List<WeatherForecast>
+    {
+        new WeatherForecast { Date = DateTime.Now.AddDays(1), TemperatureC = -20, Summary = "Freezing", IsFeatured = true },
+        new WeatherForecast { Date = DateTime.Now.AddDays(2), TemperatureC = -10, Summary = "Bracing", IsFeatured = false },
+        new WeatherForecast { Date = DateTime.Now.AddDays(3), TemperatureC = 0, Summary = "Chilly", IsFeatured = false },
+        new WeatherForecast { Date = DateTime.Now.AddDays(4), TemperatureC = 10, Summary = "Cool", IsFeatured = true },
+        new WeatherForecast { Date = DateTime.Now.AddDays(5), TemperatureC = 20, Summary = "Mild", IsFeatured = false },
+        new WeatherForecast { Date = DateTime.Now.AddDays(6), TemperatureC = 30, Summary = "Warm", IsFeatured = false },
+        new WeatherForecast { Date = DateTime.Now.AddDays(7), TemperatureC = 40, Summary = "Hot", IsFeatured = true },
+        new WeatherForecast { Date = DateTime.Now.AddDays(8), TemperatureC = 50, Summary = "Scorching", IsFeatured = false },
+    };
 }

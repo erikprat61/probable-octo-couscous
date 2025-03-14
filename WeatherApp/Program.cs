@@ -7,7 +7,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register our Services
 builder.Services.AddSingleton<IWeatherService, WeatherService>();
 
 // Configure Kestrel for Codespaces environment to prevent HTTPS errors

@@ -18,7 +18,7 @@ public class WeatherController : ControllerBase
         var forecast = new WeatherForecast
         {
             Date = DateTime.Now,
-            TemperatureC = 20,
+            TemperatureC = 200,
             Summary = "Sunny"
         };
         
