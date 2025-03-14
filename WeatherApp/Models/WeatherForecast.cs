@@ -9,4 +9,6 @@ public class WeatherForecast
     public int TemperatureF => 32 + (int)(TemperatureC * 9 / 5);
     
     public string? Summary { get; set; }
+    
+    public bool IsFeatured { get; set; }
 }

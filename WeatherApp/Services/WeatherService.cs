@@ -1,11 +1,21 @@
-using Microsoft.AspNetCore.Mvc;
 using WeatherApp.Models;
 
-namespace WeatherApp.Controllers;
+namespace WeatherApp.Services;
 
-[ApiController]
-[Route("api/[controller]")]
-public class LinqBugController : ControllerBase
+public interface IWeatherService
+{
+    /// <summary>
+    /// Gets all available weather forecasts
+    /// </summary>
+    IEnumerable<WeatherForecast> GetAllForecasts();
+    
+    /// <summary>
+    /// Gets only featured weather forecasts
+    /// </summary>
+    IEnumerable<WeatherForecast> GetFeaturedForecasts();
+}
+
+public class WeatherService : IWeatherService
 {
     // Sample weather forecast data with some forecasts marked as featured
     private static readonly List<WeatherForecast> _forecasts = new List<WeatherForecast>
@@ -19,30 +29,26 @@ public class LinqBugController : ControllerBase
         new WeatherForecast { Date = DateTime.Now.AddDays(7), TemperatureC = 40, Summary = "Hot", IsFeatured = true },
         new WeatherForecast { Date = DateTime.Now.AddDays(8), TemperatureC = 50, Summary = "Scorching", IsFeatured = false },
     };
-    
+
     /// <summary>
-    /// Retrieves featured weather forecasts that have been selected for highlighting
+    /// Gets all available weather forecasts
     /// </summary>
-    /// <returns>A collection of featured weather forecasts</returns>
-    [HttpGet]
-    public IActionResult Get()
+    public IEnumerable<WeatherForecast> GetAllForecasts()
     {
-        // Retrieve all forecasts from the data source
+        return _forecasts.ToList();
+    }
+
+    /// <summary>
+    /// Gets only featured weather forecasts
+    /// </summary>
+    public IEnumerable<WeatherForecast> GetFeaturedForecasts()
+    {
+        // Get all forecasts
         var allForecasts = _forecasts.ToList();
         
         // TODO: Filter for featured forecasts only
         var featuredForecasts = allForecasts;
         
-        // Return the featured forecasts with metadata
-        return Ok(new { 
-            TotalForecasts = _forecasts.Count,
-            FeaturedCount = featuredForecasts.Count,
-            FeaturedForecasts = featuredForecasts.Select(f => new { 
-                Date = f.Date.ToString("yyyy-MM-dd"),
-                TemperatureC = f.TemperatureC,
-                Summary = f.Summary,
-                IsFeatured = f.IsFeatured
-            })
-        });
+        return featuredForecasts;
     }
 }

@@ -29,8 +29,6 @@ public class AsyncBugControllerTests : IClassFixture<WebApplicationFactory<Progr
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         
-        // This test fails because the controller doesn't await the operation
-        // It should take at least 2 seconds (2000ms) to complete
         Assert.True(elapsedMs >= 1900, 
             $"Operation completed too quickly: {elapsedMs}ms. The operation should take at least 2 seconds.");
     }
