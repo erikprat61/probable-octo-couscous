@@ -13,7 +13,8 @@
       "extensions": [
         "ms-dotnettools.csharp",
         "ms-dotnettools.vscode-dotnet-runtime",
-        "formulahendry.dotnet-test-explorer"
+        "formulahendry.dotnet-test-explorer",
+        "ms-dotnettools.csdevkit"
       ],
       "settings": {
         "omnisharp.enableRoslynAnalyzers": true,
